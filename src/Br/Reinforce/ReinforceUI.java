@@ -10,14 +10,15 @@ import Br.API.GUI.Ex.BaseUI;
 import Br.API.GUI.Ex.Item;
 import Br.API.GUI.Ex.Snapshot;
 import Br.API.GUI.Ex.SnapshotFactory;
+import Br.API.GUI.Ex.UIManager;
 import Br.API.ItemBuilder;
 import Br.API.Utils;
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.manager.AttributeManager;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -36,7 +37,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class ReinforceUI extends BaseUI {
 
-    public static final String LEVEL_SP = "§r§r§e§l§r";
+    public static final String LEVEL_SP = "§r§r§f§e§l"; //NOI18N
 
     private static final int SLOT_ITEM = 10;
     private static final int SLOT_GEM = 12;
@@ -50,25 +51,25 @@ public class ReinforceUI extends BaseUI {
     {
         super.Rows = 3;
         super.AllowShift = false;
-        super.DisplayName = "§6强化";
-        super.Name = "R_UI";
+        super.DisplayName = MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.Title"), new Object[] {});
+        super.Name = "R_UI"; //NOI18N
 
-        for (int i : new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 11, 15}) {
-            final String id = String.format("id_%d", i);
+        for (int i : new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 11, 14}) {
+            final String id = String.format("id_%d", i); //NOI18N
             List<String> lore = new ArrayList<>();
             switch (i) {
                 case 1:
                 case 19:
-                    lore.add("§6§l请在此处放入要强化的物品");
+                    lore.add(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.Input"), new Object[] {}));
                     break;
                 case 3:
                 case 21:
-                    lore.add("§b请在此处放入强化宝石");
+                    lore.add(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.InputGem"), new Object[] {}));
                     break;
                 case 4:
                 case 22:
-                    lore.add("§a此处可放入保护卷轴");
-                    lore.add("§a保护你的物品在强化后不会消失");
+                    lore.add(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.InputProtected"), new Object[] {}));
+                    lore.add(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.HasProtect"), new Object[] {}));
                     break;
             }
             Contains[i] = Item
@@ -108,22 +109,28 @@ public class ReinforceUI extends BaseUI {
                         ItemMeta im = item.getItemMeta();
                         if (im.hasDisplayName() && im.getDisplayName().contains(LEVEL_SP)) {
                             String[] str = im.getDisplayName().split(LEVEL_SP);
-                            lv = Integer.parseInt(str[1].replaceAll("[^0-9]", ""));
+                            lv = Integer.parseInt(str[1].replaceAll("[^0-9]", "")); //NOI18N
+                        } else {
+                            return ItemBuilder
+                                    .getBuilder(Material.BARRIER)
+                                    .name(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.UnableRein"), new Object[] {}))
+                                    .lore(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.ItemUnableRein"), new Object[] {}))
+                                    .build();
                         }
                         Reinforce r = Data.Reinforces.get(lv + 1);
                         if (r == null) {
                             return ItemBuilder
                                     .getBuilder(Material.BARRIER)
-                                    .name("§c无法强化")
-                                    .lore("§c已达到最高级")
+                                    .name(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.UnableRein"), new Object[] {}))
+                                    .lore(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.MaxLevel"), new Object[] {}))
                                     .build();
                         }
                         chance += r.getProbability();
                     } else {
                         return ItemBuilder
                                 .getBuilder(Material.BARRIER)
-                                .name("§c无法强化")
-                                .lore("§c没有物品")
+                                .name(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.UnableRein"), new Object[] {}))
+                                .lore(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.NoItem"), new Object[] {}))
                                 .build();
                     }
                     ItemStack gem = s.getInventory().getItem(SLOT_GEM);
@@ -132,8 +139,8 @@ public class ReinforceUI extends BaseUI {
                         if (gem.getAmount() > 1) {
                             return ItemBuilder
                                     .getBuilder(Material.BARRIER)
-                                    .name("§c无法强化")
-                                    .lore("§c强化宝石只能放入一个")
+                                    .name(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.UnableRein"), new Object[] {}))
+                                    .lore(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.OnlyOneGem"), new Object[] {}))
                                     .build();
                         }
                         Gem g = Data.matchGem(gem);
@@ -141,8 +148,8 @@ public class ReinforceUI extends BaseUI {
                             if (g.getMax() < lv) {
                                 return ItemBuilder
                                         .getBuilder(Material.BARRIER)
-                                        .name("§c无法强化")
-                                        .lore("§c强化宝石等级过低")
+                                        .name(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.UnableRein"), new Object[] {}))
+                                        .lore(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.LowGemLevel"), new Object[] {}))
                                         .build();
                             }
                             hasGem = true;
@@ -151,8 +158,8 @@ public class ReinforceUI extends BaseUI {
                     } else {
                         return ItemBuilder
                                 .getBuilder(Material.BARRIER)
-                                .name("§c无法强化")
-                                .lore("§c没有宝石")
+                                .name(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.UnableRein"), new Object[] {}))
+                                .lore(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.NoGem"), new Object[] {}))
                                 .build();
                     }
                     ItemStack prot = s.getInventory().getItem(SLOT_PROTECTED);
@@ -161,8 +168,8 @@ public class ReinforceUI extends BaseUI {
                         if (prot.getAmount() > 1) {
                             return ItemBuilder
                                     .getBuilder(Material.BARRIER)
-                                    .name("§c无法强化")
-                                    .lore("§c保护卷轴只能放入一个")
+                                    .name(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.UnableRein"), new Object[] {}))
+                                    .lore(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.OnlyOnePro"), new Object[] {}))
                                     .build();
                         }
                         Protect pro = Data.matchProtect(prot);
@@ -171,8 +178,8 @@ public class ReinforceUI extends BaseUI {
                             if (pro.getMax() < lv) {
                                 return ItemBuilder
                                         .getBuilder(Material.BARRIER)
-                                        .name("§c无法强化")
-                                        .lore("§c保护卷轴等级过低")
+                                        .name(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.UnableRein"), new Object[] {}))
+                                        .lore(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.LowProLevel"), new Object[] {}))
                                         .build();
                             }
                         }
@@ -180,15 +187,15 @@ public class ReinforceUI extends BaseUI {
                     if (chance <= 0 || !hasGem) {
                         return ItemBuilder
                                 .getBuilder(Material.BARRIER)
-                                .name("§c无法强化")
-                                .lore("§c强化成功概率为0")
+                                .name(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.UnableRein"), new Object[] {}))
+                                .lore(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.ChanceZero"), new Object[] {}))
                                 .build();
                     }
                     ItemBuilder ib = ItemBuilder.getBuilder(Material.ANVIL);
-                    ib.name("§6点击强化");
-                    ib.lore(String.format("§a§l强化成功概率为: %.1f%%", chance * 100d));
+                    ib.name(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.Reinforce"), new Object[] {}));
+                    ib.lore(String.format(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.Chance"), new Object[] {}), chance * 100d));
                     if (hasPro) {
-                        ib.lore("§b保护卷轴使用中");
+                        ib.lore(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.UsingProtect"), new Object[] {}));
                     }
                     return ib.build();
                 })
@@ -202,11 +209,13 @@ public class ReinforceUI extends BaseUI {
                         ItemMeta im = item.getItemMeta();
                         if (im.hasDisplayName() && im.getDisplayName().contains(LEVEL_SP)) {
                             String[] str = im.getDisplayName().split(LEVEL_SP);
-                            lv = Integer.parseInt(str[1].replaceAll("[^0-9]", ""));
+                            lv = Integer.parseInt(str[1].replaceAll("[^0-9]", "")); //NOI18N
+                        } else {
+                            return;
                         }
                         rein = Data.Reinforces.get(lv + 1);
                         if (rein == null) {
-                            p.sendMessage("§c您已强化到最高级");
+                            p.sendMessage(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.MaxLevel"), new Object[] {}));
                             return;
                         }
                         chance += rein.getProbability();
@@ -217,13 +226,13 @@ public class ReinforceUI extends BaseUI {
                     boolean hasGem = false;
                     if (gem != null) {
                         if (gem.getAmount() > 1) {
-                            p.sendMessage("§c强化宝石只能放入一个");
+                            p.sendMessage(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.OnlyOneGem"), new Object[] {}));
                             return;
                         }
                         Gem g = Data.matchGem(gem);
                         if (g != null) {
                             if (g.getMax() < lv) {
-                                p.sendMessage("§c强化宝石等级过低 不能用于此强化");
+                                p.sendMessage(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.LowGemLevelFor"), new Object[] {}));
                                 return;
                             }
                             hasGem = true;
@@ -236,24 +245,24 @@ public class ReinforceUI extends BaseUI {
                     boolean hasPro = false;
                     if (prot != null) {
                         if (prot.getAmount() > 1) {
-                            p.sendMessage("§c保护卷轴只能放入一个");
+                            p.sendMessage(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.OnlyOnePro"), new Object[] {}));
                             return;
                         }
                         Protect pro = Data.matchProtect(prot);
                         if (pro != null) {
                             hasPro = true;
                             if (pro.getMax() < lv) {
-                                p.sendMessage("§c保护卷轴等级过低 不能用于此强化");
+                                p.sendMessage(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.LowProLevelFor"), new Object[] {}));
                                 return;
                             }
                         }
                     }
                     if (chance <= 0 || !hasGem) {
-                        p.sendMessage("§c强化成功概率为0 无法强化");
+                        p.sendMessage(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.ChanceZeroFor"), new Object[] {}));
                         return;
                     }
                     if (s.getInventory().getItem(SLOT_RESULT) != null) {
-                        p.sendMessage("§c请将强化结果槽中的东西移除");
+                        p.sendMessage(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("UI.RemoveResult"), new Object[] {}));
                         return;
                     }
                     s.getInventory().setItem(SLOT_GEM, null);
@@ -261,9 +270,9 @@ public class ReinforceUI extends BaseUI {
                     s.getInventory().setItem(SLOT_PROTECTED, null);
                     AnimeTask task = null;
                     if (Math.random() < chance) {
-                        task = new AnimeTask(reinforce(item, rein), null, s, p, String.format("§6玩家[%s]成功的将武器强化到了+%d", p.getName(), rein.getLevel()));
+                        task = new AnimeTask(reinforce(item, rein), null, s, p, String.format(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("Broadcast.Reinforce"), new Object[] {}), p.getName(), rein.getLevel()));
                     } else {
-                        task = new AnimeTask(prot != null ? item : null, null, s, p, String.format("§c玩家[%s]在强化到+%d时失败了 %s", p.getName(), rein.getLevel(), prot == null ? "" : "§6但还好使用了保护卷轴"));
+                        task = new AnimeTask(prot != null ? item : null, null, s, p, String.format(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("Broadcast.Fall"), new Object[] {}), p.getName(), rein.getLevel(), prot == null ? "" : MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("Broadcast.UsePro"), new Object[] {})));
                     }
                     task.runTaskTimer(Data.Plugin, 2, 2);
                     Tasks.put(p.getName(), task);
@@ -272,7 +281,7 @@ public class ReinforceUI extends BaseUI {
 
     public static class AnimeTask extends BukkitRunnable {
 
-        private static int[][] TAR = {{0, 9, 18}, {1, 19}, {2, 11, 20}, {3, 21}, {4, 22}, {5, 23}, {6, 15, 24}, {7, 25}, {8, 17, 26}};
+        private static int[][] TAR = {{0, 9, 18}, {1, 19}, {2, 11, 20}, {3, 21}, {4, 22}, {5, 14, 23}, {6, 24}, {7, 25}, {8, 17, 26}};
 
         private ItemStack result;
         private ItemStack protect;
@@ -305,7 +314,7 @@ public class ReinforceUI extends BaseUI {
                 }
             }
             for (int ct = 0; ct < 5; ct++) {
-                int t = time - ct % 9;
+                int t = (time - ct) % 9;
                 int color = 0;
                 switch (ct) {
                     case 0:
@@ -338,7 +347,14 @@ public class ReinforceUI extends BaseUI {
                 this.cancel();
                 Bukkit.broadcastMessage(this.msg);
                 Tasks.remove(player.getName());
+
+                for (int[] iss : TAR) {
+                    for (int i : iss) {
+                        snap.setData(String.format("id_%d", i), 0);
+                    }
+                }
             }
+            UIManager.UpdateUI(player);
         }
 
         public String getMsg() {
@@ -385,16 +401,14 @@ public class ReinforceUI extends BaseUI {
         List<String> newLore = new ArrayList<>();
         for (String s : lore) {
             String match = ChatColor.stripColor(s);
-            for (AttributeManager.Attribute attr : SkillAPI.getAttributeManager().getAttributes().values()) {
-                if (match.contains(attr.getKey())) {
-                    String old = match.replaceAll("[^0-9]", "");
-                    if (old.isEmpty()) {
-                        break;
-                    }
-                    int amount = Integer.parseInt(old);
-                    amount *= (1d + to.getPower());
-                    s = s.replaceFirst(old, String.valueOf(amount));
-                    break;
+
+            if (match.matches(".*: [0-9.]*")) {
+                try {
+                    String odd = match.split(":", 2)[1];
+                    boolean dec = odd.contains(".");
+                    double value = Double.parseDouble(odd) * (1d + to.getPower());
+                    s = s.replace(odd, String.format(dec ? "%.1f" : "%.0f", value));
+                } catch (Exception e) {
                 }
             }
             newLore.add(s);

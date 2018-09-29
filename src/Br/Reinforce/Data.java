@@ -62,7 +62,7 @@ public class Data {
         File f = new File(plugin.getDataFolder(), "config.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(f);
 
-        ConfigurationSection lv = config.getConfigurationSection("Reinfore.Level");
+        ConfigurationSection lv = config.getConfigurationSection("Reinforce.Level");
         for (String key : lv.getKeys(false)) {
             Reinforce ri = new Reinforce(lv.getConfigurationSection(key));
             Reinforces.put(ri.getLevel(), ri);

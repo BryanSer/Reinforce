@@ -25,7 +25,7 @@ version: 1.0
 
 commands:
     Reinforce:
-        aliases: [r]
+        aliases: [rein]
         description: 主命令
         usage: |
             §6/<command> >> 打开强化界面

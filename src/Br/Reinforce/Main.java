@@ -33,19 +33,19 @@ public class Main extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player && args.length == 0) {
-            UIManager.OpenUI((Player)sender, "R_UI");
+            UIManager.OpenUI((Player)sender, "R_UI"); //NOI18N
             return true;
         }
-        if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
+        if (args.length == 0 || args[0].equalsIgnoreCase("help")) { //NOI18N
             return false;
         }
-        if (args[0].equalsIgnoreCase("give") && sender.isOp()) {
+        if (args[0].equalsIgnoreCase("give") && sender.isOp()) { //NOI18N
             if (args.length < 4) {
                 return false;
             }
             Player p = Bukkit.getPlayerExact(args[1]);
             if (p == null || !p.isOnline()) {
-                sender.sendMessage("§c对方不在线");
+                sender.sendMessage(java.text.MessageFormat.format(java.util.ResourceBundle.getBundle("lang_ZH").getString("Command.NotOnline"), new Object[] {}));
                 return true;
             }
             ConfigItem item = null;
@@ -61,7 +61,7 @@ public class Main extends JavaPlugin {
                     break;
             }
             if(item == null){
-                sender.sendMessage("§c键值不正确");
+                sender.sendMessage(java.text.MessageFormat.format(java.util.ResourceBundle.getBundle("lang_ZH").getString("Command.ErrorKey"), new Object[] {}));
                 return true;
             }
             ItemStack is = item.getItem();
@@ -70,8 +70,8 @@ public class Main extends JavaPlugin {
             } catch (Exception e) {
             }
             Utils.safeGiveItem(p, is);
-            p.sendMessage("§c你收到了一个和强化有关的物品");
-            sender.sendMessage("§6发送完成");
+            p.sendMessage(java.text.MessageFormat.format(java.util.ResourceBundle.getBundle("lang_ZH").getString("Command.Get"), new Object[] {}));
+            sender.sendMessage(java.text.MessageFormat.format(java.util.ResourceBundle.getBundle("lang_ZH").getString("Command.Success"), new Object[] {}));
             return true;
         }
         return super.onCommand(sender, command, label, args);
