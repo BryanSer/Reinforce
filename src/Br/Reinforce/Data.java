@@ -7,7 +7,9 @@
 package Br.Reinforce;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -26,6 +28,7 @@ public class Data {
     public static Map<String, Protect> Protects = new HashMap<>();
     public static Map<String, Scroll> Scrolls = new HashMap<>();
     public static Map<Integer, Reinforce> Reinforces = new HashMap<>();
+    public static List<String> KeyWords = new ArrayList<>();
 
     public static Scroll matchScroll(ItemStack is) {
         for (Scroll s : Scrolls.values()) {
@@ -55,12 +58,20 @@ public class Data {
     }
 
     public static void loadConfig(Main plugin) {
+        Gems.clear();
+        Protects.clear();
+        Scrolls.clear();
+        Reinforces.clear();
+        KeyWords.clear();
         Plugin = plugin;
         if (!plugin.getDataFolder().exists()) {
             plugin.saveDefaultConfig();
         }
         File f = new File(plugin.getDataFolder(), "config.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(f);
+        for (String s : config.getStringList("Reinforce.KeyWord")) {
+            KeyWords.add(s);
+        }
 
         ConfigurationSection lv = config.getConfigurationSection("Reinforce.Level");
         for (String key : lv.getKeys(false)) {

@@ -74,6 +74,11 @@ public class Main extends JavaPlugin {
             sender.sendMessage(java.text.MessageFormat.format(java.util.ResourceBundle.getBundle("lang_ZH").getString("Command.Success"), new Object[] {}));
             return true;
         }
+        if(args[0].equalsIgnoreCase("reload") && sender.isOp()){
+            Data.loadConfig(this);
+            sender.sendMessage("§6重载完成");
+            return true;
+        }
         return super.onCommand(sender, command, label, args);
     }
 

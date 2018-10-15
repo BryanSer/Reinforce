@@ -37,19 +37,22 @@ public class ScrollListener implements Listener {
             return;
         }
         if (scrollitem.getAmount() > 1) {
-            evt.getWhoClicked().sendMessage(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("Scroll.TooMuch"), new Object[] {}));
+            evt.getWhoClicked().sendMessage(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("Scroll.TooMuch"), new Object[]{}));
             return;
         }
         int lv = 0;
         ItemStack item = evt.getCurrentItem().clone();
         ItemMeta im = item.getItemMeta();
+        if (im == null) {
+            return;
+        }
         if (im.hasDisplayName() && im.getDisplayName().contains(LEVEL_SP)) {
             String[] str = im.getDisplayName().split(LEVEL_SP);
             lv = Integer.parseInt(str[1].replaceAll("[^0-9]", "")); //NOI18N
         }
         int to = scroll.getTo();
         if (lv >= to) {
-            evt.getWhoClicked().sendMessage(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("Scroll.MaxLevel"), new Object[] {}));
+            evt.getWhoClicked().sendMessage(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("Scroll.MaxLevel"), new Object[]{}));
             return;
         }
         for (lv += 1; lv <= to; lv++) {
@@ -62,6 +65,6 @@ public class ScrollListener implements Listener {
         evt.setCancelled(true);
         evt.setCurrentItem(item);
         evt.setCursor(null);
-        Bukkit.broadcastMessage(String.format(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("Broadcast.Scroll"), new Object[] {}), evt.getWhoClicked().getName(), to));
+        Bukkit.broadcastMessage(String.format(MessageFormat.format(ResourceBundle.getBundle("lang_ZH").getString("Broadcast.Scroll"), new Object[]{}), evt.getWhoClicked().getName(), to));
     }
 }

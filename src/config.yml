@@ -1,4 +1,7 @@
 Reinforce:
+    #可强化属性的关键字
+    KeyWord:
+        - '攻击力'
     #等级设置
     Level:
         #+1时的情况
